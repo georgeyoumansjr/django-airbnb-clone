@@ -139,9 +139,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
 MEDIA_URL = "/media/"
 
 # Email Configuration
+EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX', '[GER WHOLESALE] ')
 
-EMAIL_HOST = "smtp.mailgun.org"
-EMAIL_PORT = "587"
-EMAIL_HOST_USER = os.environ.get("MAIL_GUN_USERNAME")
-EMAIL_HOST_PASSWORD = os.environ.get("MAIL_GUN_PASSWORD")
-EMAIL_FROM = "no-reply@sandbox8cf3408edf9c45d1a02812f96952fc5e.mailgun.org"
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'coboaccess@gmail.com')
+
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Ger Wholesale <coboaccess@gmail.com>')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # os.getenv('EMAIL_BACKEND')
+
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'coboaccess@gmail.com')
+
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+if EMAIL_PORT == 465:
+    EMAIL_USE_SSL = True
+else:
+    EMAIL_USE_TLS = True
+
+EMAIL_FROM = EMAIL_HOST_USER
