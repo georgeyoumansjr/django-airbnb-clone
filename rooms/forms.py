@@ -1,5 +1,6 @@
 from django import forms
-from rooms.models import RoomType, Amenity, Facility
+from django.forms import ModelForm
+from rooms.models import RoomType, Amenity, Facility, Room
 from django_countries.fields import CountryField
 
 
@@ -46,3 +47,20 @@ class SearchForm(forms.Form):
         queryset=Facility.objects.all(),
         widget=forms.CheckboxSelectMultiple,
     )
+
+
+# class ReservationForm(ModelForm):
+#     class Meta:
+#         model = Room
+#         fields = ["name", "check_in", "check_out", "guests"]
+
+#     def clean(self):
+#         cleaned_data = super().clean()
+#         check_in = cleaned_data.get("check_in")
+#         check_out = cleaned_data.get("check_out")
+
+#         if check_in and check_out and check_out <= check_in:
+#             raise forms.ValidationError("Check-out must be after check-in.")
+
+#         return cleaned_data
+

@@ -39,6 +39,7 @@ class Reservation(AbstractTimeStamp):
     )
     check_in = models.DateField()
     check_out = models.DateField()
+    guests = models.IntegerField(default=1)
     guest = models.ForeignKey(
         "users.User", related_name="reservations", on_delete=models.CASCADE
     )

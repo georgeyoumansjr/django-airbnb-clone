@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from django_countries.fields import CountryField
 from core.models import AbstractTimeStamp
+from reservations.models import Reservation
+
 
 
 class AbstractItem(AbstractTimeStamp):
@@ -188,3 +190,12 @@ class Room(AbstractTimeStamp):
     def get_next_four_photos(self):
         photos = self.photos.all()[1:5]
         return photos
+
+    def is_booked(self, check_in, check_out):
+        """Check if the room is booked for the given dates."""
+        reservations = self.reservations.filter(
+            status=Reservation.STATUS_CONFIRMED,
+            check_out__gte=check_in,
+            check_in__lte=check_out,
+        )
+        return reservations.exists()

@@ -1,9 +1,11 @@
 from django.views.generic import ListView, DetailView, UpdateView, View
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib import messages
 from django.http import Http404
 from rooms.models import Room
 from rooms.forms import SearchForm
+from reservations.forms import ReservationForm
 
 
 class HomeView(ListView):
@@ -43,7 +45,43 @@ class RoomDetailView(DetailView):
     """
 
     model = Room
+    template_name = "rooms/room_detail.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Add ReservationForm to the context
+        reservation_form = ReservationForm()
+        context["reservation_form"] = reservation_form
+
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        room = self.get_object()
+        reservation_form = ReservationForm(request.POST)
+
+        if reservation_form.is_valid():
+            check_in = reservation_form.cleaned_data["check_in"]
+            check_out = reservation_form.cleaned_data["check_out"]
+
+            # Check if the room is available for the selected dates
+            if not room.is_booked(check_in, check_out):
+                reservation = reservation_form.save(commit=False)
+                reservation.guest = self.request.user
+                reservation.room = room
+                reservation.save()
+
+                messages.success(request, "Reservation successful!")
+                return redirect('rooms:detail', pk=room.pk)
+            else:
+                messages.error(request, "This room is already booked for the selected dates.")
+                # return redirect('rooms:detail', pk=room.pk)
+        else:
+            messages.error(request, "Invalid reservation details. Please check the form.")
+
+        # context = self.get_context_data() 
+        # return render(request, self.template_name, self.get_context_data(**kwargs))
+        return redirect('rooms:detail', pk=room.pk)
 
 class SearchView(View):
     """rooms application SearchView Class

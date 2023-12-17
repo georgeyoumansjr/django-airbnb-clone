@@ -85,6 +85,19 @@
     <div class="w-1/3">
         {% if room.host == user %}
             <a href="{% url 'rooms:edit' room.pk %}" class="btn-link block">Edit Room</a>
+            {% elif user %}
+            <div class="border-section">
+                <h3 class="font-bold">At Price ${{ room.price }}</h3>
+                <div class="border-section">
+                    <h3 class="font-bold">Reserve this Room</h3>
+                    <form method="post" action="{% url 'rooms:detail' pk=room.pk %}">
+                        {% csrf_token %}
+                        {{ reservation_form.as_p }}
+
+                        <button type="submit" class="btn-primary">Reserve</button>
+                    </form>
+                </div>
+            </div>
         {% endif %}
     </div>
 </div>
