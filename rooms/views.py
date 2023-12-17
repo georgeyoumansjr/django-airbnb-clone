@@ -49,7 +49,7 @@ class RoomDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        # print(context)
         # Add ReservationForm to the context
         reservation_form = ReservationForm()
         context["reservation_form"] = reservation_form
@@ -57,7 +57,7 @@ class RoomDetailView(DetailView):
         return context
     
     def post(self, request, *args, **kwargs):
-        room = self.get_object()
+        room = self.object = self.get_object()
         reservation_form = ReservationForm(request.POST)
 
         if reservation_form.is_valid():
@@ -75,13 +75,13 @@ class RoomDetailView(DetailView):
                 return redirect('rooms:detail', pk=room.pk)
             else:
                 messages.error(request, "This room is already booked for the selected dates.")
-                # return redirect('rooms:detail', pk=room.pk)
         else:
             messages.error(request, "Invalid reservation details. Please check the form.")
 
-        # context = self.get_context_data() 
-        # return render(request, self.template_name, self.get_context_data(**kwargs))
-        return redirect('rooms:detail', pk=room.pk)
+
+        context = self.get_context_data(**kwargs)
+        return render(request, self.template_name, context)
+        
 
 class SearchView(View):
     """rooms application SearchView Class
