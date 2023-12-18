@@ -1,10 +1,10 @@
-from django.views.generic import ListView, DetailView, UpdateView, View
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, View
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.http import Http404
 from rooms.models import Room
-from rooms.forms import SearchForm
+from rooms.forms import SearchForm, RoomForm
 from reservations.forms import ReservationForm
 
 
@@ -189,3 +189,26 @@ class RoomEditView(UpdateView):
         "facilities",
         "house_rules",
     )
+
+
+class RoomCreateView(CreateView):
+    """rooms application RoomCreateView Class
+    Create a new room object
+
+    Inherit             : CreateView
+    Model               : Room
+    Form Class          : YourRoomForm
+    Template name       : rooms/room_create.html  
+    Success URL         : Redirects to the detail view of the created room
+    """
+
+    model = Room
+    form_class = RoomForm  
+    template_name = "rooms/room_create.html"  
+    success_url = reverse_lazy("core:home")  
+    
+    def form_valid(self, form):
+        form.instance.host = self.request.user
+        return super().form_valid(form)
+
+

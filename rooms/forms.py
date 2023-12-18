@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm
-from rooms.models import RoomType, Amenity, Facility, Room
+from rooms.models import RoomType, Amenity, Facility, Room, HouseRule, Photo
 from django_countries.fields import CountryField
 
 
@@ -48,19 +48,56 @@ class SearchForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
     )
 
+class PhotoForm(forms.ModelForm):
+    class Meta:
+        model = Photo
+        fields = ['caption', 'file']
 
-# class ReservationForm(ModelForm):
-#     class Meta:
-#         model = Room
-#         fields = ["name", "check_in", "check_out", "guests"]
+class RoomForm(ModelForm):
 
-#     def clean(self):
-#         cleaned_data = super().clean()
-#         check_in = cleaned_data.get("check_in")
-#         check_out = cleaned_data.get("check_out")
+    amenities = forms.ModelMultipleChoiceField(
+        queryset=Amenity.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    facilities = forms.ModelMultipleChoiceField(
+        queryset=Facility.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
+    house_rules = forms.ModelMultipleChoiceField(
+        queryset=HouseRule.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
 
-#         if check_in and check_out and check_out <= check_in:
-#             raise forms.ValidationError("Check-out must be after check-in.")
+    class Meta:
+        model = Room
+        fields = (
+            "name",
+            "description",
+            "country",
+            "city",
+            "price",
+            "address",
+            "guests",
+            "beds",
+            "bedrooms",
+            "baths",
+            "check_in",
+            "check_out",
+            "instant_book",
+            "room_type",
+            "amenities",
+            "facilities",
+            "house_rules",
+        )
 
-#         return cleaned_data
+        widgets = {
+            'check_in': forms.TimeInput(attrs={'type': 'time'}),
+            'check_out': forms.TimeInput(attrs={'type': 'time'}),
+        }
 
+
+
+
+class MultiplePhotoForm(forms.Form):
+    photos = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
+    caption = forms.CharField(max_length=80, required=False)
